@@ -57,6 +57,13 @@ const MASTER_PASSWORD = 'adminCCBS2026';
 const UFCG_LOGO = 'https://www.cdsa.ufcg.edu.br/images/logos/UFCG-Central-Selo-SemFundo.png';
 const CCBS_LOGO = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2lRf3SyVtqk3lf_Ba9B1kgjzXr_FP8RrB1-xIIcgrh_3eJwVg0N-BY-s&s=10';
 
+function formatarDataExtenso(dataCriacao: string) {
+  const [dataParte] = dataCriacao.split(',');
+  const [dia, mes, ano] = dataParte.split('/').map(Number);
+  const data = new Date(ano, mes - 1, dia);
+  return data.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export default function App() {
   const [user, setUser] = useState<any>(null);
   const [reservas, setReservas] = useState<any[]>([]);
@@ -530,19 +537,31 @@ export default function App() {
             </div>
 
             <div className="p-10 space-y-8">
+              {/* Protocolo (canto superior direito) */}
+              <div className="text-right -mb-2">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                  Protocolo: #{showReceipt.id}
+                </span>
+              </div>
+
               {/* Cabeçalho do Documento */}
-              <div className="flex justify-between items-center border-b-2 border-black pb-6">
-                 <img src={UFCG_LOGO} alt="UFCG" className="h-20 object-contain" />
+              <div className="flex items-center justify-between border-b-2 border-black pb-6">
+                 <img src={UFCG_LOGO} alt="UFCG" className="h-16 object-contain" />
                  <div className="text-center flex-1 px-4">
-                   <h2 className="text-lg font-black uppercase tracking-tighter text-black">UNIVERSIDADE FEDERAL DE CAMPINA GRANDE - UFCG</h2>
-                   <h3 className="text-md font-bold uppercase text-black">Centro de Ciências Biológicas e da Saúde - CCBS</h3>
-                   <p className="text-sm font-bold mt-2 uppercase underline">Termo de Responsabilidade para Utilização de Espaço</p>
+                   <h2 className="text-xl font-black uppercase text-black">Universidade Federal de Campina Grande - UFCG</h2>
+                   <h3 className="text-sm font-bold uppercase text-black mt-1">Centro de Ciências Biológicas e da Saúde - CCBS</h3>
                  </div>
-                 <img src={CCBS_LOGO} alt="CCBS" className="h-20 object-contain" />
+                 <img src={CCBS_LOGO} alt="CCBS" className="h-16 object-contain" />
+              </div>
+
+              {/* Título do Documento */}
+              <div className="text-center pt-2">
+                <h1 className="text-3xl font-black uppercase text-black tracking-tight">Termo de Responsabilidade</h1>
+                <p className="text-xs font-bold uppercase text-slate-400 tracking-widest mt-1">Para Utilização de Espaços do CCBS</p>
               </div>
 
               {/* Corpo do Documento */}
-              <div className="text-sm text-justify space-y-6 text-black leading-relaxed">
+              <div className="text-sm space-y-6 text-black leading-relaxed">
                 <p>
                   Eu, <strong>{showReceipt.requisitante}</strong>, inscrito(a) no CPF nº <strong>{showReceipt.cpf}</strong>, 
                   servidor(a)/responsável vinculado(a) ao setor <strong>{showReceipt.setor || 'Não informado'}</strong>, 
@@ -563,7 +582,7 @@ export default function App() {
                 <p className="pt-4">Por estar de acordo com as condições acima estabelecidas, firmo o presente Termo de Responsabilidade.</p>
 
                 <div className="text-center pt-8 space-y-8">
-                  <p>Campina Grande/PB, _____ de ______________________ de _________</p>
+                  <p>Campina Grande/PB, {formatarDataExtenso(showReceipt.dataCriacao)}</p>
                   
                   <div className="w-1/2 mx-auto border-t border-black pt-2 mt-12">
                     <p className="font-bold uppercase">{showReceipt.requisitante}</p>
