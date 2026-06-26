@@ -77,6 +77,7 @@ export default function App() {
   const [loadingAI, setLoadingAI] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<any>(null);
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDayReservas, setSelectedDayReservas] = useState<{date: string, items: any[]} | null>(null);
@@ -255,6 +256,43 @@ export default function App() {
       showToast('Modo Administrador Ativado', 'success');
     } else {
       showToast('Senha Mestra incorreta', 'error');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    const elemento = document.getElementById('termo-pdf-content');
+    if (!elemento) return;
+    setGeneratingPDF(true);
+    try {
+      // @ts-ignore
+      const canvas = await window.html2canvas(elemento, { scale: 2, backgroundColor: '#ffffff' });
+      // @ts-ignore
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgData = canvas.toDataURL('image/png');
+
+      let heightLeft = imgHeight;
+      let position = 0;
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`Termo_${showReceipt.id}.pdf`);
+    } catch (err) {
+      console.error(err);
+      showToast('Erro ao gerar o PDF. Tente novamente.', 'error');
+    } finally {
+      setGeneratingPDF(false);
     }
   };
 
@@ -536,7 +574,7 @@ export default function App() {
               </p>
             </div>
 
-            <div className="p-10 space-y-8">
+            <div className="p-10 space-y-8" id="termo-pdf-content">
               {/* Cabeçalho do Documento Ajustado (Logótipo CCBS à direita com exatamente 2cm de largura) */}
               <div className="flex justify-between items-center pb-4">
                  <img src={UFCG_LOGO} alt="UFCG" className="h-14 w-14 object-contain" />
@@ -616,8 +654,8 @@ export default function App() {
             </div>
 
             <div className="p-8 bg-slate-50 flex gap-4 print:hidden border-t border-slate-200">
-              <button onClick={() => window.print()} className="flex-1 py-4 bg-blue-700 text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-blue-800 transition-all uppercase tracking-widest text-xs">
-                <Printer className="w-4 h-4" /> Imprimir Termo PDF
+              <button onClick={handleDownloadPDF} disabled={generatingPDF} className="flex-1 py-4 bg-blue-700 text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-blue-800 transition-all uppercase tracking-widest text-xs disabled:opacity-50">
+                {generatingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />} {generatingPDF ? 'Gerando PDF...' : 'Baixar Termo PDF'}
               </button>
               <button onClick={() => setShowReceipt(null)} className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-600 font-black rounded-xl hover:bg-slate-100 transition-all uppercase tracking-widest text-xs">
                 Fechar
