@@ -523,197 +523,6 @@ export default function App() {
         </div>
       </footer>
 
-         {/* FORMULÁRIO DE AGENDAMENTO (ESQUERDA) */}
-        <div className="lg:col-span-4">
-          <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden sticky top-24">
-            <div className="bg-blue-800 p-6 flex items-center justify-between">
-              <h2 className="text-white font-black text-sm uppercase tracking-widest flex items-center gap-2">
-                <CalendarCheck className="w-5 h-5 text-blue-300" /> Novo Agendamento
-              </h2>
-              <button onClick={generateAISuggestions} disabled={loadingAI} className="bg-white/10 p-2 rounded-lg text-white hover:bg-white/20 transition-all" title="Pedir Sugestões à IA">
-                {loadingAI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-yellow-300" />}
-              </button>
-            </div>
-            
-            <form onSubmit={handleBooking} className="p-6 space-y-4">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Local & Data</label>
-                <select name="auditorio" value={formData.auditorio} onChange={handleChange} className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold uppercase text-xs focus:border-blue-600 outline-none transition-all">
-                  {AUDITORIOS.map(a => <option key={a}>{a}</option>)}
-                </select>
-                <input type="date" name="data" value={formData.data} onChange={handleChange} className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold outline-none focus:border-blue-600" />
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Início</label>
-                    <select name="horaInicio" value={formData.horaInicio} onChange={handleChange} className="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-xs uppercase">
-                      {HORARIOS.slice(0, -1).map(h => <option key={h}>{h}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Fim</label>
-                    <select name="horaFim" value={formData.horaFim} onChange={handleChange} className="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-xs uppercase">
-                      {HORARIOS.map(h => <option key={h} disabled={h <= formData.horaInicio}>{h}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Evento</label>
-                <input type="text" name="nomeEvento" value={formData.nomeEvento} onChange={handleChange} placeholder="Nome do Evento" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 font-bold" />
-
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Responsável</label>
-                <input type="text" name="requisitante" value={formData.requisitante} onChange={handleChange} placeholder="Nome Completo" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600" />
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <input type="text" name="cpf" value={formData.cpf} onChange={handleChange} placeholder="CPF" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 text-sm" />
-                  <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 text-sm" />
-                </div>
-                
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="E-mail" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 text-sm" />
-                <input type="text" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor / Departamento" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600" />
-                
-                {aiSuggestions && (
-                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-2xl animate-in zoom-in duration-300 mt-2">
-                    <div className="flex items-center gap-2 text-yellow-700 font-black text-[10px] uppercase mb-1">
-                      <Sparkles className="w-3 h-3" /> Sugestão da Inteligência Artificial
-                    </div>
-                    <p className="text-xs font-bold text-slate-800 mb-2">"{aiSuggestions.titulo}"</p>
-                    <div className="flex flex-wrap gap-1">
-                      {aiSuggestions.sugestoes.map((s, i) => (
-                        <span key={i} className="text-[9px] bg-white border border-yellow-200 px-2 py-0.5 rounded-full text-yellow-800">{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="bg-blue-900/5 p-4 rounded-2xl border-2 border-blue-100 mt-4">
-                  <div className="flex items-center gap-2 mb-2 text-blue-900">
-                    <Lock className="w-3 h-3" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Segurança</span>
-                  </div>
-                  <input type="password" name="senha" value={formData.senha} onChange={handleChange} placeholder="Senha p/ Cancelamento" className="w-full p-3 bg-white border border-blue-200 rounded-xl text-center font-bold tracking-widest text-blue-900 outline-none focus:border-blue-600" />
-                </div>
-              </div>
-
-              <button type="submit" className="w-full py-5 mt-2 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-2 active:scale-95">
-                <CheckCircle className="w-4 h-4" /> Confirmar Agendamento
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* VISUALIZAÇÃO DO CALENDÁRIO (DIREITA) */}
-        <div className="lg:col-span-8 space-y-6 relative">
-          <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-200 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <div className="flex items-center gap-4">
-                <div className="bg-blue-600 p-3 rounded-2xl text-white">
-                  <CalendarIcon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-slate-800 uppercase tracking-tighter capitalize">
-                    {new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(currentDate)}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">{reservas.length} Eventos Ativos</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="p-2 hover:bg-white rounded-xl border border-slate-200 shadow-sm transition-all"><ChevronLeft /></button>
-                <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="p-2 hover:bg-white rounded-xl border border-slate-200 shadow-sm transition-all"><ChevronRight /></button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-7 border-b border-slate-100">
-              {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => (
-                <div key={d} className="py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">{d}</div>
-              ))}
-            </div>
-            
-            <div className="grid grid-cols-7">{renderCalendar()}</div>
-            
-            <div className="p-4 bg-slate-50 flex gap-6 justify-center border-t border-slate-100">
-              <div className="flex items-center gap-2"><div className="w-3 h-3 bg-blue-600 rounded-sm"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Auditório</span></div>
-              <div className="flex items-center gap-2"><div className="w-3 h-3 bg-cyan-500 rounded-sm"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sala de Reunião</span></div>
-            </div>
-          </div>
-
-          {/* PAINEL DE DETALHES DO DIA */}
-          {selectedDayReservas && (
-            <div className="bg-slate-900 rounded-[2rem] p-8 text-white shadow-2xl animate-in slide-in-from-right duration-500 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-               <button onClick={() => setSelectedDayReservas(null)} className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-full transition-all"><X /></button>
-               
-               <div className="flex justify-between items-center mb-6">
-                 <h4 className="text-2xl font-black uppercase flex items-center gap-3">
-                   <Info className="w-6 h-6 text-blue-400" /> {selectedDayReservas.date.split('-').reverse().join('/')}
-                 </h4>
-                 
-                 {/* Botão de desbloqueio para Admin */}
-                 {!isAdminMode ? (
-                   <button onClick={() => setShowAdminUnlock(true)} className="flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-white transition-all bg-white/5 px-3 py-1.5 rounded-full">
-                     <Lock className="w-3 h-3" /> Ver Contatos
-                   </button>
-                 ) : (
-                   <button onClick={() => setIsAdminMode(false)} className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 hover:text-emerald-300 transition-all bg-emerald-400/10 px-3 py-1.5 rounded-full">
-                     <Unlock className="w-3 h-3" /> Modo Admin Ativo
-                   </button>
-                 )}
-               </div>
-               
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 {selectedDayReservas.items.map(res => (
-                   <div key={res.id} className="bg-white/5 border border-white/10 p-5 rounded-2xl relative group hover:bg-white/10 transition-all">
-                     
-                     <div className="flex justify-between items-start mb-3">
-                       <div className="flex items-center gap-2">
-                         <span className={`text-[8px] font-black px-2 py-0.5 rounded uppercase ${res.auditorio === 'AUDITÓRIO' ? 'bg-blue-600' : 'bg-cyan-500'}`}>{res.auditorio}</span>
-                         <span className="text-[10px] font-bold text-blue-300 uppercase">{res.horaInicio} - {res.horaFim}</span>
-                       </div>
-                       <button onClick={() => setShowCancelModal(res)} className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all" title="Cancelar este agendamento">
-                         <Trash2 className="w-4 h-4" />
-                       </button>
-                     </div>
-
-                     <h5 className="text-lg font-black uppercase tracking-tight text-white mb-1">{res.nomeEvento}</h5>
-                     <div className="flex items-center gap-2 text-xs text-slate-300 mb-3">
-                       <User className="w-3 h-3" /> {res.requisitante} <span className="opacity-50">({res.setor})</span>
-                     </div>
-
-                     {/* Área de Contatos */}
-                     <div className="pt-3 border-t border-white/10">
-                       {isAdminMode ? (
-                         <div className="space-y-1">
-                           <p className="text-[10px] text-slate-400 flex items-center gap-2"><CreditCard className="w-3 h-3" /> CPF: {res.cpf}</p>
-                           <p className="text-[10px] text-slate-400 flex items-center gap-2"><Mail className="w-3 h-3" /> {res.email}</p>
-                           <p className="text-[10px] text-slate-400 flex items-center gap-2"><Phone className="w-3 h-3" /> {res.telefone}</p>
-                         </div>
-                       ) : (
-                         <div className="flex items-center gap-2 text-[10px] text-slate-500 italic">
-                           <Lock className="w-3 h-3" /> Contatos Ocultos
-                         </div>
-                       )}
-                     </div>
-
-                   </div>
-                 ))}
-               </div>
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* RODAPÉ */}
-      <footer className="mt-auto border-t border-slate-200 bg-white print:hidden">
-        <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-            Desenvolvido por: <span className="text-blue-600">Renato de Freitas Souza</span> | © 2026 Copyright
-          </p>
-          <a href="https://github.com/renatofreitas-create/agendamento.ccbs.git" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-slate-800 transition-all text-xs font-bold bg-slate-100 px-3 py-2 rounded-lg">
-            <Github className="w-4 h-4" /> Repositório Oficial
-          </a>
-        </div>
-      </footer>
-
       {/* TERMO DE RESPONSABILIDADE (Gerado após reserva) */}
       {showReceipt && (
         <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-4 print:relative print:bg-white print:p-0 print:inset-0 print:block overflow-y-auto">
@@ -746,7 +555,7 @@ export default function App() {
               </div>
 
               {/* Corpo do Documento */}
-              <div className="text-xs text-justify space-y-4 text-black leading-relaxed">
+              <div className="text-xs space-y-4 text-black leading-relaxed">
                 <p>
                   Eu, <strong>{showReceipt.requisitante}</strong>, CPF nº <strong>{showReceipt.cpf}</strong>, 
                   E-mail: <strong>{showReceipt.email}</strong> e contato: <strong>{showReceipt.telefone}</strong>, 
@@ -786,7 +595,7 @@ export default function App() {
                 <p className="pt-4 text-center">Por estar de acordo com as condições acima estabelecidas, firmo o presente Termo de Responsabilidade.</p>
 
                 <div className="text-center pt-6 space-y-8">
-                  <p>Campina Grande/PB, _____ de ______________________ de _________</p>
+                  <p>Campina Grande/PB, {formatarDataExtenso(showReceipt.dataCriacao)}</p>
                   
                   <div className="w-1/2 mx-auto border-t border-black pt-2 mt-12">
                     <p className="font-bold uppercase text-xs">RESPONSÁVEL PELO EVENTO: {showReceipt.requisitante}</p>
@@ -817,7 +626,7 @@ export default function App() {
           </div>
         </div>
       )}
-  
+
       {/* MODAL DE DESBLOQUEIO ADMIN */}
       {showAdminUnlock && (
         <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[120] flex items-center justify-center p-4 print:hidden">
